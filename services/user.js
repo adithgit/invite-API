@@ -1,9 +1,10 @@
 const session = require('express-session');
 const User = require('../models/user');
+var bcrypt = require("bcryptjs");
 
 exports.login = (credentials) => {
     return new Promise((resolve, reject) => {
-        User.findOne({ email: credentials.email },(err, result) => {
+        User.findOne({ email: credentials.email }, (err, result) => {
             if (err || !result) return reject(err || "Email not valid.");
             User.comparePassword(credentials.password, result.password, (err, isCorrect) => {
                 console.log(err);
@@ -29,14 +30,20 @@ exports.signup = (credentials) => {
 }
 
 
-exports.edit = (credentials) => {
+exports.edit = async (email, newData) => {
+    if (newData.password) {
+        newData.password = await bcrypt.hash(newData.password, 10);
+    }
     return new Promise((resolve, reject) => {
-
+        User.findOneAndUpdate({ email }, newData, (err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+        })
     })
 }
 
 exports.invite = (credentials) => {
     return new Promise((resolve, reject) => {
-
+resolve("sdf");
     })
 }

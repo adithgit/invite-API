@@ -17,7 +17,7 @@ router.get("/test", (req, res)=>{
 
 router.get('/logout', userControl.logout);
 router.post('/edit', userControl.editUser);
-// router.get('/invite', userControl.getInvite);
+router.get('/invite', userControl.getInvite);
 
 
 module.exports = router;

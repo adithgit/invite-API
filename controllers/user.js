@@ -34,18 +34,18 @@ exports.logout = async (req, res) => {
 
 exports.editUser = async (req, res) => {
     try {
-        const result = await userServices.edit(req.body);
+        const result = await userServices.edit(req.session.user.email, req.body);
         res.status(200).send({ message: 'user details updated.', data: result });
     } catch (e) {
         res.status(401).send({ message: e.toString() });
     }
+}
 
 exports.getInvite = async (req, res) => {
-        try {
-            const result = await userServices.invite(req.body);
-            res.status(200).send({ message: 'invite get successfull', data: result });
-        } catch (e) {
-            res.status(401).send({ message: e.toString() });
-        }
+    try {
+        const result = await userServices.invite(req.body);
+        res.status(200).send({ message: 'invite get successfull', data: result });
+    } catch (e) {
+        res.status(401).send({ message: e.toString() });
     }
 }
