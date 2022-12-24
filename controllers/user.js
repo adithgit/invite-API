@@ -1,15 +1,18 @@
 const userServices = require('../services/user');
 const voucher = require('voucher-code-generator');
+const { response } = require('express');
 
 exports.login = async (req, res) => {
     try {
-        // With email and password in body
+        // Verify email and password
         const result = await userServices.login(req.body);
+        const {password, ...response} = result._doc;
+        // Create session
         req.session.user = {
             id: result._id,
             email: result.email,
         }
-        res.status(200).send({ message: 'logged in', data: result });
+        res.status(200).send({ message: 'logged in', data: response });
     } catch (e) {
         res.status(401).send({ message: e.toString() });
     }
@@ -17,9 +20,10 @@ exports.login = async (req, res) => {
 
 exports.signup = async (req, res) => {
     try {
-        // Singnup using email and password 
+        // Signup using email and password 
         const result = await userServices.signup(req.body);
-        res.status(200).send({ message: 'signed up', data: result });
+        const {password, ...response} = result._doc;
+        res.status(200).send({ message: 'signed up', data: response });
     } catch (e) {
         res.status(401).send({ message: e.toString() });
     }
@@ -39,17 +43,21 @@ exports.editUser = async (req, res) => {
     try {
         // Change their own info only 
         const result = await userServices.edit(req.session.user.email, req.body);
-        res.status(200).send({ message: 'user details updated.', data: result });
+        // Update session email to current email if updated
+        req.session.user.email = result.email;
+        const {password, ...response} = result._doc;
+        res.status(200).send({ message: 'user details updated.', data: response });
     } catch (e) {
-        res.status(401).send({ message: e.toString() });
+        res.status(500).send({ message: e.toString() });
     }
 }
 
 exports.getInvite = async (req, res) => {
     try {
+        // Get invite code 
         const result = await userServices.invite(req.session.user.email);
         res.status(200).send({ message: 'invite get successfull', data: result });
     } catch (e) {
-        res.status(401).send({ message: e.toString() });
+        res.status(500).send({ message: e.toString() });
     }
 }

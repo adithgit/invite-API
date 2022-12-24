@@ -1,6 +1,6 @@
 exports.checkLoggedin = (req, res, next)=>{
     try{
-        console.log(req.session);
+        // Checks if the session has user details
         if(!req.session.user) throw new Error();
         next();
     }
